@@ -7,7 +7,8 @@ router.param('id', tourController.checkID)
 router
     .route('/')
     .get(tourController.getAllTours)
-    .post(tourController.createTour)
+    // tourController.checkBody is Middleware
+    .post(tourController.checkBody, tourController.createTour)
 router
     .route('/:id')
     .get(tourController.getTour)
