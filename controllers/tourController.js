@@ -1,10 +1,27 @@
 const Tour = require('../models/tourModel')
 
 exports.getAllTours = async (req, res) => {
-    // console.log(req.requestTime)
     try {
-        const tours = await Tour.find()
+        // build query
+        const queryObj = { ...req.query };
+        const excludeFields = ['page', 'sort', 'limit', 'fields'];
+        excludeFields.forEach(el => delete queryObj[el])
 
+        // The Moongse model give you a easy way to operate Objects
+        // const querys = Tour.find(req.query);
+
+        // object operation
+        // const tours = await Tour.find()
+        //     .where('duration')
+        //     // .lt(5)
+        //     .equals(5)
+        //     .where('difficulty')
+        //     .equals('easy')
+
+        // execute  query
+        const tours = await Tour.find(queryObj);;
+
+        // send response
         res.status(200).json({
             'status': 'success',
             'requestedAt': req.requestTime,
@@ -43,8 +60,6 @@ exports.getTour = async (req, res) => {
 
 exports.createTour = async (req, res) => {
     try {
-        // const newTours = new Tour({})
-        // newTours.save()
 
         const newTour = await Tour.create(req.body);
 
