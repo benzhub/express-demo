@@ -12,13 +12,28 @@ exports.getAllTours = async (req, res) => {
         // const querys = Tour.find(req.query);
 
         // execute  query
-        // 2. Advanced filtering
-        // execute query
+        // 1B. Advanced filtering
         let queryStr = JSON.stringify(queryObj)
         queryStr = queryStr.replace(/(gte|gt|lte|lt)\b/g, match => `$${match}`)
-        console.log(JSON.parse(queryStr))
+        // console.log(JSON.parse(queryStr))
         // const tours = await Tour.find(queryObj);
-        const tours = await Tour.find(JSON.parse(queryStr));
+        let query = Tour.find(JSON.parse(queryStr));
+
+        // 2. Sorting
+        //http://localhost:8000/api/v1/tours?sort=price // price low to high
+        //http://localhost:8000/api/v1/tours?sort=-price // price high to low
+        if (req.query.sort) {
+            // http://localhost:8000/api/v1/tours?sort=-price,ratingsAverage
+            const sortBy = req.query.sort.split(',').join(' ');
+            // console.log(sortBy)
+            query = query.sort(sortBy)
+            // sort('price ratingAverage')
+        } else {
+            query = query.sort('-createdAt')
+        }
+
+        // execute query
+        const tours = await query;
 
         // { difficult: 'easy', duration: { $gte: 5 } }
         // { difficult: 'easy', duration: { gte: '5' } }
