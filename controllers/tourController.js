@@ -3,12 +3,25 @@ const Tour = require('../models/tourModel')
 exports.getAllTours = async (req, res) => {
     try {
         // build query
+        // 1. Filtering
         const queryObj = { ...req.query };
         const excludeFields = ['page', 'sort', 'limit', 'fields'];
         excludeFields.forEach(el => delete queryObj[el])
 
         // The Moongse model give you a easy way to operate Objects
         // const querys = Tour.find(req.query);
+
+        // execute  query
+        // 2. Advanced filtering
+        // execute query
+        let queryStr = JSON.stringify(queryObj)
+        queryStr = queryStr.replace(/(gte|gt|lte|lt)\b/g, match => `$${match}`)
+        console.log(JSON.parse(queryStr))
+        // const tours = await Tour.find(queryObj);
+        const tours = await Tour.find(JSON.parse(queryStr));
+
+        // { difficult: 'easy', duration: { $gte: 5 } }
+        // { difficult: 'easy', duration: { gte: '5' } }
 
         // object operation
         // const tours = await Tour.find()
@@ -17,9 +30,6 @@ exports.getAllTours = async (req, res) => {
         //     .equals(5)
         //     .where('difficulty')
         //     .equals('easy')
-
-        // execute  query
-        const tours = await Tour.find(queryObj);;
 
         // send response
         res.status(200).json({
