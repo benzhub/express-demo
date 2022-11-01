@@ -29,8 +29,20 @@ exports.getAllTours = async (req, res) => {
             query = query.sort(sortBy)
             // sort('price ratingAverage')
         } else {
+            // default sort by created Time
             query = query.sort('-createdAt')
         }
+
+        // 3. Field Limiting
+        if (req.query.fields) {
+            //http://localhost:8000/api/v1/tours?fields=name,duration,difficulty,price => rsults only include name,duration,difficulty,price
+            //http://localhost:8000/api/v1/tours?fields=-name,-duration => rsults only exclude name,duration
+            const fields = req.query.fields.split(',').join(' ');
+            query = query.select(fields)
+        } else {
+            query = query.select('-__v')
+        }
+
 
         // execute query
         const tours = await query;
